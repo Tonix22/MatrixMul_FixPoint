@@ -7,7 +7,7 @@
 
 module FSM
 (
-	input clk, we, mul,fxp,print,
+	input clk, we, rd_ack,mul,fxp,print,
 	output reg [5:0] out
 );
 
@@ -51,20 +51,21 @@ module FSM
 					else
 						state <= READ_B;
 				READ_B:
-					if (we == 0)
+					if (rd_ack == 1'b1)
 						state <= READ_A;
 					else
 						state <= READ_B;
 				READ_A:
-					if (mul)
+					if(rd_ack == 1'b1)
 						state <= FXP_CHECK;
-                    else if (!mul & !fxp)
-                        state <= EXPORT_ROWS;
 					else
 						state <= READ_A;
+
                 FXP_CHECK:
                     if(fxp)
                         state<=FXP_CHECK;
+					else if (print)
+						state<=EXPORT_ROWS;
                     else
                         state<=READ_A;
                 EXPORT_ROWS: 

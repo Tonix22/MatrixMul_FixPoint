@@ -11,7 +11,8 @@ module Matrix_Mul
 	input [(`WORD_SIZE-1):0] data_wr,
 	input [(`ADDRS_LEN-1):0] addr,
 	output reg signed [BIT-1:0] AB_Transpose, // one element of the row at the time
-	output reg QI, QF
+	output reg [3:0] QI, 
+	output reg [3:0] QF
 );
 
 /*

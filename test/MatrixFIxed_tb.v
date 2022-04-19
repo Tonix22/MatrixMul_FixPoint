@@ -24,28 +24,65 @@ Matrix_Mul Matrix_Mul_dut
     .QF(QF)
 );
 
-integer data_file    ; // file handler
+integer fd    ; // file handler
 integer scan_file    ; // file handler
 integer i;
+integer nth_product;
 reg [(`WORD_SIZE-1):0] captured_data;
 
 initial begin
 
     //write memory
+    src_clk = 1'b0;
     we = 1'b1;
-    data_file = $fopen("../PythonScripts/output.txt", "r");
-    if (data_file == `NULL) 
+    fd = $fopen("../../PythonScripts/data.csv", "r");
+    if (fd == `NULL) 
     begin
         $display("data_file handle was NULL");
         $finish;
     end
-    while(!$feof(data_file)) 
+
+    scan_file = $fscanf(fd, "%s\n", captured_data); //first line
+    while(!$feof(fd)) 
     begin
-        scan_file = $fscanf(data_file, "%d\n", captured_data); 
-        $display("val = %d",captured_data);
+        for(nth_product = 0;nth_product < 1;nth_product=nth_product+1) 
+        begin
+            // intial memory address
+            addr = 7'h00;
+            scan_file = $fscanf(fd, "%s\n", captured_data);//float line
+            scan_file = $fscanf(fd, "%X,", captured_data);//row number
+            // flatten matrix
+            for(i=0;i<64;i=i+1) begin 
+                scan_file = $fscanf(fd, "%X,", captured_data); // data
+                #3
+                data_wr = captured_data;
+                #2
+                addr    = addr+1;
+                
+                $display("val = %X",captured_data);
+            end
+            //vector
+            for(i=0;i<8;i=i+1) begin
+                scan_file = $fscanf(fd, "%X,", captured_data); // data
+                #3
+                data_wr = captured_data;
+                #2
+                addr    = addr+1;
+                $display("val = %X",captured_data);
+            end
+            scan_file = $fscanf(fd, "%s\n", captured_data);//end line
+            #10;
+            we = 1'b0;
+            #100;
+
+        end
+        
+
+        $stop;
         data_wr = captured_data;
         #4
         addr = addr+1;
+        
     end
 
 end

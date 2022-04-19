@@ -47,5 +47,5 @@ assign QF_out = overflow?QF_in-1'b1:
 // if the data had an overflow, concatenate right an extra bit space, and procees the sum with new QI
 assign Result = ~(overflow)?Tp:({sign_A,DataA[`WORD_SIZE-1:1]}+{sign_B,DataB[`WORD_SIZE-1:1]});
 
-
+assign Sum = Result;
 endmodule

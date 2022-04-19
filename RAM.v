@@ -6,9 +6,9 @@ module Memory
 #(parameter DATA_WIDTH=`WORD_SIZE, parameter ADDR_WIDTH=`ADDRS_LEN,parameter PARALLEL_READ=`MATRIX_DIM)
 (
 	input [(DATA_WIDTH-1):0] data,
-	input [(ADDR_WIDTH-1):0] addr,
+	input [(`ADDRS_LEN-1):0] addr,
 	input we, clk,
-	output [(DATA_WIDTH-1)*PARALLEL_READ:0] q
+	output [(DATA_WIDTH*PARALLEL_READ)-1:0] q
 );
 
 	// Declare the RAM variable
@@ -22,13 +22,13 @@ module Memory
 		// Write
 		if (we)
 			ram[addr] <= data;
-
+			
 		addr_reg <= addr;
 	end
 
 	// Continuous assignment implies read returns NEW data.
 	// This is the natural behavior of the TriMatrix memory
-	// blocks in Single Port mode.  
+	// blocks in Single Port mode. 
 	assign q = {ram[addr_reg],ram[addr_reg+1],ram[addr_reg+2],
 				ram[addr_reg+3],ram[addr_reg+4],ram[addr_reg+5],
 				ram[addr_reg+6],ram[addr_reg+7]};

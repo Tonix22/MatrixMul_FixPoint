@@ -28,9 +28,9 @@ for n in range (0,REALIZATIONS):
 
     
     for m in range(0,64):
-        df.loc[n*2+1,m]  = z1[m].bin(frac_dot=True) 
+        df.loc[n*2+1,m]  = z1[m].hex() 
     for m in range(0,8):
-        df.loc[n*2+1,m+64]  = z2[m].bin(frac_dot=True) 
+        df.loc[n*2+1,m+64]  = z2[m].hex() 
 
 
 df.to_csv('data.csv')

@@ -25,8 +25,9 @@ module Matrix_Mul
                               
 */
 reg [(`ADDRS_LEN-1):0] addr_rd;
-wire [(`WORD_SIZE-1)*`MATRIX_DIM:0] data_rd;
+wire [(`WORD_SIZE*`MATRIX_DIM)-1:0] data_rd;
 
+wire [(`ADDRS_LEN-1):0] add_sel;
 assign add_sel = we? addr:addr_rd;
 
 Memory mem(
@@ -75,15 +76,15 @@ FSM fsm(
 */
 // hold: internal flag to wait a clk cycle when memry read
 reg hold;
-reg [(`WORD_SIZE-1):0]A[0:`MATRIX_DIM];
-reg [(`WORD_SIZE-1):0]B[0:`MATRIX_DIM];
+reg [(`WORD_SIZE-1):0]A[0:`MATRIX_DIM-1];
+reg [(`WORD_SIZE-1):0]B[0:`MATRIX_DIM-1];
 
 //final vector result
-reg [(`WORD_SIZE-1):0]C[0:`MATRIX_DIM];
+reg [(`WORD_SIZE-1):0]C[0:`MATRIX_DIM-1];
 
 // QI and QF for each result, it could vary for each element of vector
-reg [(`WORD_SIZE-1):0]QI_vector[0:`MATRIX_DIM];
-reg [(`WORD_SIZE-1):0]QF_vector[0:`MATRIX_DIM];
+reg [(`WORD_SIZE-1):0]QI_vector[0:`MATRIX_DIM-1];
+reg [(`WORD_SIZE-1):0]QF_vector[0:`MATRIX_DIM-1];
 
 // partial sums and temporal variables
 reg [(`WORD_SIZE-1):0]TEMP[0:(`MATRIX_DIM/2)];
@@ -158,8 +159,10 @@ begin
 		/************* READ B ************/
 		READ_B:
 		begin
-			if(!hold) begin
+			if(addr_rd!=`VECTOR_B_ADDR) begin 
 				addr_rd = `VECTOR_B_ADDR;
+			end
+			else if(!hold) begin
 				hold = 1'b1;
 			end
 			else begin // wait for stable read of memory
@@ -272,6 +275,7 @@ begin
 			rd_ack     = 1'b0;
 			print_flag = 1'b0;
 			row_cnt    = 3'b0;
+			addr_rd    = 6'b0;
 		end
 
 	endcase

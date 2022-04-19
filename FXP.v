@@ -4,24 +4,24 @@
 //TODO check if signed needed it
 module FXP
 (
-    input [(`WORD_SIZE-1):0]DataA,
-    input [(`WORD_SIZE-1):0]DataB,
+    input signed [(`WORD_SIZE-1):0]DataA,
+    input signed [(`WORD_SIZE-1):0]DataB,
     input [3:0]QI_in,
     input [3:0]QF_in,
     output [3:0]QI_out,
     output [3:0]QF_out,
-    output [(`WORD_SIZE-1):0]Sum
+    output signed [(`WORD_SIZE-1):0]Sum
 );
 
 wire [(`WORD_SIZE-1):0]Tp;
-
+wire [(`WORD_SIZE-1):0]Result;
 
 // Normal sum
 assign Tp = DataA+DataB;
 
 // Sign of sums. It will be used to detect overflow or underflow
-assign sign_A = DataA[`WORD_SIZE-1];
-assign sign_B = DataA[`WORD_SIZE-1];
+assign sign_A  = DataA[`WORD_SIZE-1];
+assign sign_B  = DataA[`WORD_SIZE-1];
 assign sign_Tp = Tp[`WORD_SIZE-1];
 
 // if they have the same sign, check the difference betwen DataA xor TP. If they don't have the same sign

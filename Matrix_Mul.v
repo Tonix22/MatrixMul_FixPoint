@@ -104,11 +104,11 @@ reg[2:0] export_cnt;
 ╚═╝     ╚═╝  ╚═╝╚═╝          ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝
 */                                                               
 // independent sum blocks
-wire [3:0]Q_int_inital  = 4'b1;
-wire [3:0]Q_frac_intial = 4'hF;
+wire [3:0]Q_int_inital  = 4'b0010;
+wire [3:0]Q_frac_intial = 4'hE;
 wire [3:0]QI_out[0:2];
 wire [3:0]QF_out[0:2];
-wire [(`WORD_SIZE-1):0]Sum[0:2];
+wire signed [(`WORD_SIZE-1):0]Sum[0:2];
 
 FXP fxp_1 // merge TEMP[0] and TEMP[1]
 (
@@ -232,7 +232,7 @@ begin
 					//Concatenate the most significant bit to the shortest integer part
 					//and remove last fractional bit, to compensate the same QI.F format 
 					TEMP[0] = {Sum[0][(`WORD_SIZE-1)],Sum[0][(`WORD_SIZE-1):1]};
-					TEMP[2]=Sum[1];
+					TEMP[2] =  Sum[1];
 				end
 				else begin // if not adjument neede it
 					TEMP[0]=Sum[0]; 
@@ -283,6 +283,7 @@ begin
 			print_flag = 1'b0;
 			row_cnt    = 3'b0;
 			addr_rd    = 7'b0;
+
 		end
 
 	endcase

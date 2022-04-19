@@ -58,6 +58,9 @@ add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/C
 add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/TEMP
 add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/row_cnt
 
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/Sum
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/QI_out sim:/MatrixFIxed_tb/Matrix_Mul_dut/QF_out
+
 
 
 

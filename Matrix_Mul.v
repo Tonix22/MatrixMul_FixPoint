@@ -76,18 +76,19 @@ FSM fsm(
 */
 // hold: internal flag to wait a clk cycle when memry read
 reg hold;
-reg [(`WORD_SIZE-1):0]A[0:`MATRIX_DIM-1];
-reg [(`WORD_SIZE-1):0]B[0:`MATRIX_DIM-1];
-
+reg addr_set;
+reg signed [(`WORD_SIZE-1):0]A[0:`MATRIX_DIM-1];
+reg signed [(`WORD_SIZE-1):0]B[0:`MATRIX_DIM-1];
+reg signed [(2*`WORD_SIZE)-2:0]AB[0:`MATRIX_DIM-1];
 //final vector result
-reg [(`WORD_SIZE-1):0]C[0:`MATRIX_DIM-1];
+reg signed [(`WORD_SIZE-1):0]C[0:`MATRIX_DIM-1];
 
 // QI and QF for each result, it could vary for each element of vector
 reg [(`WORD_SIZE-1):0]QI_vector[0:`MATRIX_DIM-1];
 reg [(`WORD_SIZE-1):0]QF_vector[0:`MATRIX_DIM-1];
 
 // partial sums and temporal variables
-reg [(`WORD_SIZE-1):0]TEMP[0:(`MATRIX_DIM/2)];
+reg [(`WORD_SIZE-1):0]TEMP[0:(`MATRIX_DIM/2)-1];
 reg [2:0] fxp_stage;
 integer i;
 // row number process, goes from 0-7
@@ -155,40 +156,48 @@ FXP fxp3 // merge the last to sums
 
 always @(posedge src_clk) 
 begin
+	if(rd_ack == 1'b1) begin
+		rd_ack = 1'b0;
+	end
 	case (status)
 		/************* READ B ************/
 		READ_B:
 		begin
-			if(addr_rd!=`VECTOR_B_ADDR) begin 
-				addr_rd = `VECTOR_B_ADDR;
+			if(addr_set == 1'b0) begin 
+				addr_rd  = `VECTOR_B_ADDR;
+				addr_set = 1'b1;
 			end
 			else if(!hold) begin
 				hold = 1'b1;
+				rd_ack = 1'b1;
 			end
 			else begin // wait for stable read of memory
 				{B[0],B[1],B[2],B[3],B[4],B[5],B[6],B[7]} = data_rd;
 
 				/*** FSM FLAGS *****/
 				hold   = 1'b0;
-				rd_ack = 1'b1;
+				addr_set = 1'b0;
+				addr_rd  = 7'b0;
 				/*** FSM FLAGS *****/
 			end
 		end
 		/************* READ A ************/
 		READ_A:
 		begin
-			if(!hold)begin
+			if(addr_set == 1'b0) begin
 				addr_rd = addr_rd + (row_cnt*4'h8);
-				hold = 1'b1;
-				rd_ack = 1'b0;
+				addr_set = 1'b1;
+			end
+			else if(!hold)begin
+				hold   = 1'b1;
+				rd_ack = 1'b1;
 			end
 			else begin // wait for stable read of memory
 				hold = 1'b0;
 				{A[0],A[1],A[2],A[3],A[4],A[5],A[6],A[7]} = data_rd;
-
 				/*** FSM FLAGS *****/
-				rd_ack   = 1'b1;
 				fxp_flag = 1'b1;
+				addr_set = 1'b0;
 				/*** FSM FLAGS *****/
 			end
 		end
@@ -199,16 +208,13 @@ begin
 			if(fxp_stage == 0) begin
 				// first time no FXP check needed
 				for (i=0;i<`MATRIX_DIM;i=i+1) begin
-					C[i]=A[i]*B[i];
+					AB[i] = A[i]*B[i];
+					C[i]  =(AB[i][(2*`WORD_SIZE)-3:14]);// discard last bit and ignore 16
 				end
 				for (i=0;i<(`MATRIX_DIM/2);i=i+1) begin
 					TEMP[i] = C[i*2]+C[(i*2)+1];
 				end
 				fxp_stage = fxp_stage+1;
-
-				/*** FSM FLAGS *****/
-				rd_ack  = 1'b0;
-				/*** FSM FLAGS *****/
 			end
 			else if (fxp_stage == 1) begin
 				// adjust QI partcial sums if needed
@@ -270,12 +276,13 @@ begin
 		default://IDLE
 		begin
 			hold       = 1'b0;
+			addr_set   = 1'b0;
 			fxp_stage  = 1'b0;
 			mul_flag   = 1'b0;
 			rd_ack     = 1'b0;
 			print_flag = 1'b0;
 			row_cnt    = 3'b0;
-			addr_rd    = 6'b0;
+			addr_rd    = 7'b0;
 		end
 
 	endcase

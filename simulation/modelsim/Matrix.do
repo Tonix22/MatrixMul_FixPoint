@@ -28,18 +28,39 @@ radix define States {
 
 
 add wave -position insertpoint sim:/MatrixFIxed_tb/src_clk
-add wave -position insertpoint sim:/MatrixFIxed_tb/we
+
+#******* MEMORY *******
+#add wave -position insertpoint sim:/MatrixFIxed_tb/we
 #add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/data_wr
 #add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr
-add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/addr
-add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/addr_reg
-add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/q
-add wave -radix States -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/status
-add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/B
-add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr_rd
-add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/hold
-
+#add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/addr
+#add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/addr_reg
+#add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/q
 #add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/mem/ram
+
+#******* STATES *******
+add wave -radix States -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/status
+
+#***** A and B *****
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/A
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/B
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/AB
+
+#******MEM REGISTERS HELPERS*****
+#add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr_rd
+#add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/hold
+#add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr_set
+#add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/rd_ack
+
+#******** FXP ********
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp_stage
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/C
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/TEMP
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/row_cnt
+
+
+
+
 view structure
 view signals
 run -all

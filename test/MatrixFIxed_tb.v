@@ -35,7 +35,6 @@ initial begin
 
     //write memory
     src_clk = 1'b0;
-    we = 1'b1;
     fd    = $fopen("../../PythonScripts/data.csv", "r");
     fd_wr = $fopen("../../PythonScripts/res.csv", "w");
     for(i=0;i<7;i=i+1) begin
@@ -50,47 +49,41 @@ initial begin
     end
 
     scan_file = $fscanf(fd, "%s\n", captured_data); //first line
-    while(!$feof(fd)) 
+    for(nth_product = 0;nth_product < 999;nth_product=nth_product+1) 
     begin
-        for(nth_product = 0;nth_product < 1;nth_product=nth_product+1) 
-        begin
-            // intial memory address
-            addr = 7'h00;
-            scan_file = $fscanf(fd, "%s\n", captured_data);//float line
-            scan_file = $fscanf(fd, "%X,", captured_data);//row number
-            // flatten matrix
-            for(i=0;i<64;i=i+1) begin 
-                scan_file = $fscanf(fd, "%X,", captured_data); // data
-                #3
-                data_wr = captured_data;
-                #2
-                addr    = addr+1;
-                
-                $display("val = %X",captured_data);
-            end
-            //vector
-            for(i=0;i<8;i=i+1) begin
-                scan_file = $fscanf(fd, "%X,", captured_data); // data
-                #3
-                data_wr = captured_data;
-                #2
-                addr    = addr+1;
-                //$display("val = %X",captured_data);
-            end
-            scan_file = $fscanf(fd, "%s\n", captured_data);//end line
-            #10;
-            we = 1'b0;
-            #200;
+        we = 1'b1;
+        // intial memory address
+        addr = 7'h00;
+        scan_file = $fscanf(fd, "%s\n", captured_data);//float line
+        scan_file = $fscanf(fd, "%X,", captured_data);//row number
+        // flatten matrix
+        for(i=0;i<64;i=i+1) begin 
+            scan_file = $fscanf(fd, "%X,", captured_data); // data
+            #3
+            data_wr = captured_data;
+            #2
+            addr    = addr+1;
+            
+            $display("val = %X",captured_data);
         end
-        $fclose(fd_wr);
-        $fclose(fd);
-        $stop;
-
-        data_wr = captured_data;
-        #4
-        addr = addr+1;
+        //vector
+        for(i=0;i<8;i=i+1) begin
+            scan_file = $fscanf(fd, "%X,", captured_data); // data
+            #3
+            data_wr = captured_data;
+            #2
+            addr    = addr+1;
+            //$display("val = %X",captured_data);
+        end
+        scan_file = $fscanf(fd, "%s\n", captured_data);//end line
+        #10;
+        we = 1'b0;
+        #140; //// MAIN MATRIX PROCESES
     end
-
+    
+    $fclose(fd_wr);
+    $fclose(fd);
+    $stop;
 end
 
 /// print output

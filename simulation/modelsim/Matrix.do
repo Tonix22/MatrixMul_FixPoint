@@ -40,11 +40,24 @@ add wave -position insertpoint sim:/MatrixFIxed_tb/src_clk
 
 #******* STATES *******
 add wave -radix States -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/status
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/AB_Transpose
+add wave -radix unsigned -position insertpoint  \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/QI \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/QF
+#add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/export_cnt
 
-#***** A and B *****
+#***** VECTORS *****
 add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/A
+#add wave -radix unsigned -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr_rd
 add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/B
 add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/AB
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/C
+add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/TEMP
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/Sum
+#add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/QI_out sim:/MatrixFIxed_tb/Matrix_Mul_dut/QF_out
+add wave  -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/VECT
+#add wave  -radix hex -position insertpoint {sim:/MatrixFIxed_tb/Matrix_Mul_dut/Sum[2]}
+
 
 #******MEM REGISTERS HELPERS*****
 #add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr_rd
@@ -52,16 +65,48 @@ add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/AB
 #add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/addr_set
 #add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/rd_ack
 
+
+
 #******** FXP ********
 add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp_stage
-add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/C
-add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/TEMP
 add wave -radix hex -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/row_cnt
 
-add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/Sum
-add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/QI_out sim:/MatrixFIxed_tb/Matrix_Mul_dut/QF_out
+
+#add wave -position insertpoint  \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/Q_max_I \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/Q_min_F
+
+#add wave -position insertpoint  \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/DataA \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/DataB
+#add wave -position insertpoint  \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/Result
 
 
+
+
+#add wave -position insertpoint  \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/Tp
+#add wave -position insertpoint  \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/sign_A \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/sign_B \
+#sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/sign_Tp
+
+
+#fxp----N-----
+
+add wave -position insertpoint  \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/overflow \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/underflow
+
+add wave -position insertpoint sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/Tp
+
+add wave -position insertpoint  \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/QI_in \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/QF_in
+add wave -position insertpoint  \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/QI_out \
+sim:/MatrixFIxed_tb/Matrix_Mul_dut/fxp3/QF_out
 
 
 view structure

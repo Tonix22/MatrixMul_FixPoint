@@ -82,6 +82,7 @@ reg signed [(`WORD_SIZE-1):0]B[0:`MATRIX_DIM-1];
 reg signed [(2*`WORD_SIZE)-2:0]AB[0:`MATRIX_DIM-1];
 //final vector result
 reg signed [(`WORD_SIZE-1):0]C[0:`MATRIX_DIM-1];
+reg signed [(`WORD_SIZE-1):0]VECT[0:`MATRIX_DIM-1];
 
 // QI and QF for each result, it could vary for each element of vector
 reg [(`WORD_SIZE-1):0]QI_vector[0:`MATRIX_DIM-1];
@@ -185,7 +186,7 @@ begin
 		READ_A:
 		begin
 			if(addr_set == 1'b0) begin
-				addr_rd = addr_rd + (row_cnt*4'h8);
+				addr_rd = (row_cnt*4'h8);
 				addr_set = 1'b1;
 			end
 			else if(!hold)begin
@@ -234,14 +235,20 @@ begin
 					TEMP[0] = {Sum[0][(`WORD_SIZE-1)],Sum[0][(`WORD_SIZE-1):1]};
 					TEMP[2] =  Sum[1];
 				end
-				else begin // if not adjument neede it
+				else begin // if not adjument need it
+					Q_max_I = QI_out[0];
+					Q_min_F = QF_out[0];
 					TEMP[0]=Sum[0]; 
 					TEMP[2]=Sum[1];
 				end
 				fxp_stage = fxp_stage+1;
+				//****** FLAGS*****//
+				fxp_flag   = 0; //send message to state machine to prepare transition next clk
+				if(row_cnt == 3'd7)
+					print_flag = 1'b1;
 			end
 			else if (fxp_stage == 2) begin
-				C[row_cnt] = Sum[2]; // Nth row result
+				VECT[row_cnt] = Sum[2]; // Nth row result
 				QI_vector[row_cnt] = QI_out[2];
 				QF_vector[row_cnt] = QF_out[2];
 
@@ -249,19 +256,16 @@ begin
 				begin
 					row_cnt = row_cnt+1'b1; // next row  proc
 					fxp_stage  = 0; // clear counter stage
-					fxp_flag   = 0; //
 				end
 				else begin
 					row_cnt    = 3'b000; // reset column cnt
-					print_flag = 1'b1;
 				end
-			
 			end
 		end
 		/************* EXPORT_ROWS ************/
 		EXPORT_ROWS:
 		begin
-			AB_Transpose = C[export_cnt];
+			AB_Transpose = VECT[export_cnt];
 			QI = QI_vector[export_cnt];
 			QF = QF_vector[export_cnt];
 			if(export_cnt != 3'd7)
@@ -283,6 +287,7 @@ begin
 			print_flag = 1'b0;
 			row_cnt    = 3'b0;
 			addr_rd    = 7'b0;
+			export_cnt = 3'b0;
 
 		end
 

@@ -25,6 +25,7 @@ Matrix_Mul Matrix_Mul_dut
 );
 
 integer fd    ; // file handler
+integer fd_wr ;
 integer scan_file    ; // file handler
 integer i;
 integer nth_product;
@@ -35,7 +36,13 @@ initial begin
     //write memory
     src_clk = 1'b0;
     we = 1'b1;
-    fd = $fopen("../../PythonScripts/data.csv", "r");
+    fd    = $fopen("../../PythonScripts/data.csv", "r");
+    fd_wr = $fopen("../../PythonScripts/res.csv", "w");
+    for(i=0;i<7;i=i+1) begin
+        $fwrite(fd_wr,"D_%d ,QI_%d ,QF_%d ,",i,i,i);
+    end
+    $fwrite(fd_wr,"D_%d ,QI_%d ,QF_%d\n",i,i,i);
+
     if (fd == `NULL) 
     begin
         $display("data_file handle was NULL");
@@ -68,23 +75,42 @@ initial begin
                 data_wr = captured_data;
                 #2
                 addr    = addr+1;
-                $display("val = %X",captured_data);
+                //$display("val = %X",captured_data);
             end
             scan_file = $fscanf(fd, "%s\n", captured_data);//end line
             #10;
             we = 1'b0;
-            #100;
-
+            #200;
         end
-        
-
+        $fclose(fd_wr);
+        $fclose(fd);
         $stop;
+
         data_wr = captured_data;
         #4
         addr = addr+1;
-        
     end
 
+end
+
+/// print output
+integer data_cnt = 0;
+integer hold_repeat = 0;
+always @(AB_Transpose) begin
+    if(hold_repeat == 0)
+        if(data_cnt !=7)
+        begin
+            $fwrite(fd_wr,"%X ,%d ,%d ,",AB_Transpose,QI,QF);
+            data_cnt = data_cnt+1;
+        end
+        else begin
+            $fwrite(fd_wr,"%X ,%d ,%d \n",AB_Transpose,QI,QF);
+            data_cnt = 0;
+            hold_repeat = 1;
+        end
+    else begin
+        hold_repeat = 0;
+    end
 end
 
 

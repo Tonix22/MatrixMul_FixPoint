@@ -15,13 +15,15 @@ module FXP
 
 wire [(`WORD_SIZE-1):0]Tp;
 wire [(`WORD_SIZE-1):0]Result;
+wire [(`WORD_SIZE-1):0]OF;
+wire [(`WORD_SIZE-1):0]UF;
 
 // Normal sum
 assign Tp = DataA+DataB;
 
 // Sign of sums. It will be used to detect overflow or underflow
 assign sign_A  = DataA[`WORD_SIZE-1];
-assign sign_B  = DataA[`WORD_SIZE-1];
+assign sign_B  = DataB[`WORD_SIZE-1];
 assign sign_Tp = Tp[`WORD_SIZE-1];
 
 // if they have the same sign, check the difference betwen DataA xor TP. If they don't have the same sign
@@ -30,7 +32,7 @@ assign overflow  = (sign_A ^ sign_B) ? 1'b0:(sign_A^sign_Tp);
 
 // if the integer sign bit is equal to the next bit, 
 //this means that bit n-2 is irrelevant for integer part.
-assign underflow =  ~(sign_Tp ^ Tp[`WORD_SIZE-2]);  
+assign underflow =  ~(sign_Tp ^ Tp[`WORD_SIZE-2]) & (QI_in != 4'b0001);  
 
 // if there is not overlow check if there is underflow
 assign QI_out = overflow?QI_in+1'b1: 
@@ -45,7 +47,9 @@ assign QF_out = overflow?QF_in-1'b1:
                 (QF_in));   // if not bypass QF_in
 
 // if the data had an overflow, concatenate right an extra bit space, and procees the sum with new QI
-assign Result = ~(overflow)?Tp:({sign_A,DataA[`WORD_SIZE-1:1]}+{sign_B,DataB[`WORD_SIZE-1:1]});
+assign OF = {sign_A,DataA[`WORD_SIZE-1:1]}+{sign_B,DataB[`WORD_SIZE-1:1]};
+assign UF = {Tp[`WORD_SIZE-2:0],1'b0}; // underflow
+assign Result = overflow?OF:underflow?UF:Tp;
 
 assign Sum = Result;
 endmodule

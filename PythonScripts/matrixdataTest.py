@@ -33,16 +33,18 @@ for i in range(0,999):
         fxp_vector.append(z1)
         
     FPGA_res = np.asarray(fxp_vector)
-    
-    opt.append(math.sqrt((optimal_res@optimal_res.T)/8))
-    estimate.append(math.sqrt((FPGA_res@FPGA_res.T)/8))
+    #save each sample of the results in a vector for future calc in SQNR
+    opt.append(optimal_res)
+    estimate.append(FPGA_res)
 
 
-opt_np = np.asarray(opt)
-res_np = np.asarray(estimate)
-P_opt  = np.average(opt_np) 
-P_res  = np.average(res_np)
-SQNR   = 10*math.log(P_res/P_opt)
+opt_np = np.asarray(opt).flatten()
+res_np = np.asarray(estimate).flatten()
+
+P_opt  = np.average(np.square(opt_np)) #optimal
+P_res  = np.average(np.square(np.var(res_np-opt_np))) #error
+
+SQNR   = 10*math.log(P_opt/P_res)
 print("SQNR: ",end='')
 print(SQNR,end='')
 print(" dB")

@@ -63,8 +63,6 @@ initial begin
             data_wr = captured_data;
             #2
             addr    = addr+1;
-            
-            $display("val = %X",captured_data);
         end
         //vector
         for(i=0;i<8;i=i+1) begin
@@ -73,7 +71,6 @@ initial begin
             data_wr = captured_data;
             #2
             addr    = addr+1;
-            //$display("val = %X",captured_data);
         end
         scan_file = $fscanf(fd, "%s\n", captured_data);//end line
         #10;
